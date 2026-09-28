@@ -215,7 +215,3 @@ export function MapaFiscalizacao({
 
   return <div ref={divRef} className="h-full w-full" />;
 }
-
-export function focarCoordenada() {
-  return undefined;
-}
