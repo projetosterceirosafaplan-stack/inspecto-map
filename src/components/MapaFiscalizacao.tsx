@@ -118,7 +118,7 @@ export function MapaFiscalizacao({
   // Cursor conforme o modo
   useEffect(() => {
     if (!mapRef.current) return;
-    mapRef.current.setOptions({ draggableCursor: modo === "navegar" ? undefined : "crosshair" });
+    mapRef.current.setOptions({ draggableCursor: modo === "navegar" ? null : "crosshair" });
   }, [modo, pronto]);
 
   // Postes
@@ -133,7 +133,7 @@ export function MapaFiscalizacao({
         map: mapRef.current!,
         position: { lat: p.lat, lng: p.lng },
         title: `Poste ${p.codigo || "?"} — ${pendencias} pendência(s)`,
-        label: pendencias ? { text: String(pendencias), color: "#ffffff", fontSize: "11px" } : undefined,
+        label: pendencias ? { text: String(pendencias), color: "#ffffff", fontSize: "11px" } : null,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: selecionado ? 14 : 11,

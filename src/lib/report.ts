@@ -94,7 +94,7 @@ function cabecalhoTabela() {
         new TableCell({
           borders: bordas,
           margins: margens,
-          width: { size: COLS[i], type: WidthType.DXA },
+          width: { size: col(i), type: WidthType.DXA },
           shading: { fill: "DCE3EC", type: ShadingType.CLEAR },
           verticalAlign: VerticalAlign.CENTER,
           children: [texto(t, { bold: true })],
