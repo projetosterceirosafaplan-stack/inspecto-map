@@ -57,8 +57,8 @@ function Inicio() {
     empreiteira: "",
     dataFiscalizacao: new Date().toISOString().slice(0, 10),
     fiscal: "",
-    tipoProjeto: TIPOS_PROJETO[0],
-    porteProjeto: PORTES_PROJETO[2],
+    tipoProjeto: TIPOS_PROJETO[0] ?? "Extensão MT",
+    porteProjeto: PORTES_PROJETO[2] ?? "Grande Porte",
   });
 
   useEffect(() => {

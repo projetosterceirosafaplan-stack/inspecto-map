@@ -21,7 +21,8 @@ import { rotuloPrioridade } from "./pendencias";
 import type { Fiscalizacao, Foto, PendenciaApontada, Ponto, Trecho } from "./types";
 
 const CONTENT_WIDTH = 9026; // A4 com margens de 1 polegada
-const COLS = [1000, 3000, 1000, 2826, 1200];
+const COLS = [1000, 3000, 1000, 2826, 1200] as const;
+const col = (i: number) => COLS[i] ?? 1000;
 const FOTO_MAX_W = 180;
 const FOTO_MAX_H = 300;
 
@@ -48,7 +49,7 @@ function celulaFoto(foto: Foto | undefined) {
     return new TableCell({
       borders: bordas,
       margins: margens,
-      width: { size: COLS[3], type: WidthType.DXA },
+      width: { size: col(3), type: WidthType.DXA },
       verticalAlign: VerticalAlign.CENTER,
       children: [texto("Sem foto", { color: "8A929C" })],
     });
@@ -61,7 +62,7 @@ function celulaFoto(foto: Foto | undefined) {
   return new TableCell({
     borders: bordas,
     margins: margens,
-    width: { size: COLS[3], type: WidthType.DXA },
+    width: { size: col(3), type: WidthType.DXA },
     verticalAlign: VerticalAlign.CENTER,
     children: [
       new Paragraph({
@@ -106,7 +107,7 @@ function tabelaPendencia(local: string, p: PendenciaApontada, fallback: Foto | u
   const descricao = new TableCell({
     borders: bordas,
     margins: margens,
-    width: { size: COLS[1], type: WidthType.DXA },
+    width: { size: col(1), type: WidthType.DXA },
     verticalAlign: VerticalAlign.CENTER,
     children: [
       texto(`${local} / ${p.classificacao || `PRIORIDADE ${p.prioridade}`}`, { bold: true }),
@@ -118,7 +119,7 @@ function tabelaPendencia(local: string, p: PendenciaApontada, fallback: Foto | u
 
   return new Table({
     width: { size: CONTENT_WIDTH, type: WidthType.DXA },
-    columnWidths: COLS,
+    columnWidths: [...COLS],
     rows: [
       cabecalhoTabela(),
       new TableRow({
@@ -126,7 +127,7 @@ function tabelaPendencia(local: string, p: PendenciaApontada, fallback: Foto | u
           new TableCell({
             borders: bordas,
             margins: margens,
-            width: { size: COLS[0], type: WidthType.DXA },
+            width: { size: col(0), type: WidthType.DXA },
             verticalAlign: VerticalAlign.CENTER,
             children: [texto(p.codigo, { bold: true })],
           }),
@@ -134,7 +135,7 @@ function tabelaPendencia(local: string, p: PendenciaApontada, fallback: Foto | u
           new TableCell({
             borders: bordas,
             margins: margens,
-            width: { size: COLS[2], type: WidthType.DXA },
+            width: { size: col(2), type: WidthType.DXA },
             verticalAlign: VerticalAlign.CENTER,
             children: [texto(rotuloPrioridade(p.prioridade), { bold: true })],
           }),
@@ -142,7 +143,7 @@ function tabelaPendencia(local: string, p: PendenciaApontada, fallback: Foto | u
           new TableCell({
             borders: bordas,
             margins: margens,
-            width: { size: COLS[4], type: WidthType.DXA },
+            width: { size: col(4), type: WidthType.DXA },
             verticalAlign: VerticalAlign.CENTER,
             children: [texto(p.justificativa ?? "")],
           }),

@@ -72,7 +72,9 @@ function BotaoFoto({
 export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPendencia }: Props) {
   const pendencias = local.pendencias;
 
-  function atualizarPendencia(id: string, patch: Partial<PendenciaApontada>) {
+  type PatchPendencia = { [K in keyof PendenciaApontada]?: PendenciaApontada[K] | undefined };
+
+  function atualizarPendencia(id: string, patch: PatchPendencia) {
     onChange({
       pendencias: pendencias.map((p) => (p.id === id ? { ...p, ...patch } : p)),
     } as Partial<Ponto & Trecho>);
