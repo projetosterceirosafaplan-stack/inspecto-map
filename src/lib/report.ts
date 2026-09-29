@@ -21,9 +21,9 @@ import { rotuloPrioridade } from "./pendencias";
 import type { Fiscalizacao, Foto, PendenciaApontada, Ponto, Trecho } from "./types";
 
 const CONTENT_WIDTH = 9026; // A4 com margens de 1 polegada
-const COLS = [1000, 3000, 1000, 2826, 1200] as const;
+const COLS = [900, 2600, 1100, 2600, 1826] as const;
 const col = (i: number) => COLS[i] ?? 1000;
-const FOTO_MAX_W = 180;
+const FOTO_MAX_W = 165;
 const FOTO_MAX_H = 300;
 
 const linha = { style: BorderStyle.SINGLE, size: 4, color: "B6BDC6" };
@@ -239,7 +239,7 @@ export async function gerarRelatorio(f: Fiscalizacao) {
     ...f.trechos
       .filter((t) => t.pendencias.length > 0)
       .map((t) => ({
-        nome: `TRECHO ${t.nome || "sem nome"}`,
+        nome: /^trecho/i.test(t.nome.trim()) ? t.nome.toUpperCase() : `TRECHO ${t.nome || "sem nome"}`,
         coords: `${t.path.length} vértices`,
         item: t as Trecho,
       })),
