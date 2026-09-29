@@ -21,7 +21,7 @@ import { rotuloPrioridade } from "./pendencias";
 import type { Fiscalizacao, Foto, PendenciaApontada, Ponto, Trecho } from "./types";
 
 const CONTENT_WIDTH = 9026; // A4 com margens de 1 polegada
-const COLS = [900, 2600, 1100, 2600, 1826] as const;
+const COLS = [1000, 2400, 1200, 2600, 1826] as const;
 const col = (i: number) => COLS[i] ?? 1000;
 const FOTO_MAX_W = 165;
 const FOTO_MAX_H = 300;
