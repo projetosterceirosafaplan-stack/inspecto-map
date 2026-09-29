@@ -18,6 +18,7 @@ import { PendenciaPicker } from "@/components/PendenciaPicker";
 import { obterFiscalizacao, salvarFiscalizacao } from "@/lib/db";
 import { apontar } from "@/lib/pendencias";
 import { gerarRelatorio } from "@/lib/report";
+import { gerarPlanilha } from "@/lib/planilha";
 import type { Fiscalizacao, PendenciaCatalogo, Ponto, Trecho } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -183,6 +184,17 @@ function Fiscalizar() {
             {f.pontos.length} postes · {totalPendencias} pendências
           </p>
         </div>
+        <Button
+          onClick={() =>
+            gerarPlanilha(f)
+              .then(() => toast.success("Planilha Excel gerada"))
+              .catch(() => toast.error("Não foi possível gerar a planilha"))
+          }
+          variant="secondary"
+          size="sm"
+        >
+          Excel
+        </Button>
         <Button
           onClick={baixarRelatorio}
           disabled={gerando}
