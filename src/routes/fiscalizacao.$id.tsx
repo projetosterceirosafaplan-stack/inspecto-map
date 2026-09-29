@@ -19,6 +19,7 @@ import { obterFiscalizacao, salvarFiscalizacao } from "@/lib/db";
 import { apontar } from "@/lib/pendencias";
 import { gerarRelatorio } from "@/lib/report";
 import { gerarPlanilha } from "@/lib/planilha";
+import { gerarKmz } from "@/lib/kmz";
 import type { Fiscalizacao, PendenciaCatalogo, Ponto, Trecho } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -194,6 +195,17 @@ function Fiscalizar() {
           size="sm"
         >
           Excel
+        </Button>
+        <Button
+          onClick={() =>
+            gerarKmz(f)
+              .then(() => toast.success("KMZ gerado"))
+              .catch(() => toast.error("Não foi possível gerar o KMZ"))
+          }
+          variant="secondary"
+          size="sm"
+        >
+          KMZ
         </Button>
         <Button
           onClick={baixarRelatorio}

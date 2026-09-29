@@ -264,9 +264,8 @@ export async function gerarRelatorio(f: Fiscalizacao) {
       );
     }
     const etiqueta = "codigo" in local.item ? local.item.codigo : local.item.nome;
-    const fallback = local.item.fotos[0];
     for (const p of local.item.pendencias) {
-      children.push(tabelaPendencia(etiqueta || local.nome, p, fallback));
+      children.push(tabelaPendencia(etiqueta || local.nome, p, undefined));
       children.push(espaco(200));
     }
   }
