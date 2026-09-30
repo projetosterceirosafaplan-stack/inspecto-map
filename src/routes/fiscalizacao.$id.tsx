@@ -63,6 +63,7 @@ function Fiscalizar() {
   const [rascunho, setRascunho] = useState<{ lat: number; lng: number }[]>([]);
   const [pickerAberto, setPickerAberto] = useState(false);
   const [gerando, setGerando] = useState(false);
+  const [confirmarFim, setConfirmarFim] = useState(false);
 
   useEffect(() => {
     obterFiscalizacao(id).then((r) => setF(r ?? null));
@@ -162,6 +163,20 @@ function Fiscalizar() {
     } finally {
       setGerando(false);
     }
+  }
+
+  function finalizar() {
+    atualizar((a) => ({ ...a, finalizadaEm: Date.now() }));
+    setConfirmarFim(false);
+    toast.success("Fiscalização finalizada. Você pode reabrir quando quiser.");
+  }
+
+  function reabrir() {
+    atualizar((a) => {
+      const { finalizadaEm: _ignorado, ...resto } = a;
+      return resto as Fiscalizacao;
+    });
+    toast.success("Fiscalização reaberta para edição");
   }
 
   const selecionarPonto = useCallback((pid: string) => setSelecionado({ tipo: "poste", id: pid }), []);
