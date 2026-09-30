@@ -381,6 +381,22 @@ function Fiscalizar() {
         onFechar={() => setPickerAberto(false)}
         onSelecionar={adicionarPendencia}
       />
+
+      <AlertDialog open={confirmarFim} onOpenChange={setConfirmarFim}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Finalizar esta fiscalização?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ela será marcada como concluída e o pacote com os 3 arquivos ficará disponível na tela
+              inicial. Você pode reabrir para editar quando quiser.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={finalizar}>Finalizar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
