@@ -32,7 +32,7 @@ function descricao(
   todas.forEach(({ foto, titulo }, i) => {
     const nome = `files/${prefixo}_${i + 1}.jpg`;
     zip.file(nome, dataUrlParaBytes(foto.dataUrl));
-    html += `<p>${esc(titulo)}<br/><img src="${nome}" width="400"/></p>`;
+    html += `<p>${esc(titulo)}<br/><img src="${nome}" width="900"/></p>`;
   });
   return `<![CDATA[${html}]]>`;
 }
