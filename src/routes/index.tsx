@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ClipboardList, MapPin, Plus, Trash2, Zap } from "lucide-react";
+import { CheckCircle2, ClipboardList, FolderDown, MapPin, Plus, Trash2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,6 +26,7 @@ import {
   salvarFiscalizacao,
 } from "@/lib/db";
 import { PORTES_PROJETO, TIPOS_PROJETO, type Fiscalizacao } from "@/lib/types";
+import { gerarPacote } from "@/lib/pacote";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
@@ -52,6 +53,7 @@ function Inicio() {
   const navigate = useNavigate();
   const [lista, setLista] = useState<Fiscalizacao[]>([]);
   const [aberto, setAberto] = useState(false);
+  const [exportando, setExportando] = useState<string | null>(null);
   const [form, setForm] = useState({
     projeto: "",
     empreiteira: "",
@@ -72,6 +74,19 @@ function Inicio() {
     }
     const f = await salvarFiscalizacao(novaFiscalizacao(form));
     navigate({ to: "/fiscalizacao/$id", params: { id: f.id } });
+  }
+
+  async function exportarPacote(f: Fiscalizacao) {
+    setExportando(f.id);
+    try {
+      await gerarPacote(f);
+      toast.success("Pacote com os 3 arquivos baixado");
+    } catch (e) {
+      toast.error("Não foi possível gerar o pacote");
+      console.error(e);
+    } finally {
+      setExportando(null);
+    }
   }
 
   async function remover(id: string) {

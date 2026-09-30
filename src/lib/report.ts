@@ -212,7 +212,11 @@ function tituloLocal(nome: string, coords?: string) {
   });
 }
 
-export async function gerarRelatorio(f: Fiscalizacao) {
+export function nomeRelatorio(f: Fiscalizacao) {
+  return `Relatorio_Pendencias_${(f.projeto || "projeto").replace(/[^\w-]+/g, "_")}.docx`;
+}
+
+export async function gerarRelatorioBlob(f: Fiscalizacao): Promise<Blob> {
   const children: (Paragraph | Table)[] = [
     new Paragraph({
       alignment: AlignmentType.CENTER,
@@ -313,8 +317,15 @@ export async function gerarRelatorio(f: Fiscalizacao) {
     ],
   });
 
-  const blob = await Packer.toBlob(doc);
-  const nome = `Relatorio_Pendencias_${(f.projeto || "projeto").replace(/[^\w-]+/g, "_")}.docx`;
+  return await Packer.toBlob(doc);
+}
+
+export async function gerarRelatorio(f: Fiscalizacao) {
+  const blob = await gerarRelatorioBlob(f);
+  baixar(blob, nomeRelatorio(f));
+}
+
+function baixar(blob: Blob, nome: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

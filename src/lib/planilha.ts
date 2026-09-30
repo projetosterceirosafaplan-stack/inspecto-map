@@ -1,6 +1,10 @@
 import type { Fiscalizacao } from "./types";
 
-export async function gerarPlanilha(f: Fiscalizacao) {
+export function nomePlanilha(f: Fiscalizacao) {
+  return `Pendencias_Nota_${(f.projeto || "sem-numero").replace(/[^\w-]+/g, "_")}.xlsx`;
+}
+
+async function montar(f: Fiscalizacao) {
   const XLSX = await import("xlsx");
   const linhas: (string | number)[][] = [
     ["Nº DA NOTA", "POSTE (BARRAMENTO)", "CÓDIGO", "DESCRIÇÃO", "TIPO", "PRIORIDADE", "TRATATIVA", "JUSTIFICATIVA"],
@@ -24,5 +28,16 @@ export async function gerarPlanilha(f: Fiscalizacao) {
   ws["!autofilter"] = { ref: `A1:H${linhas.length}` };
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Pendências");
-  XLSX.writeFile(wb, `Pendencias_Nota_${f.projeto || "sem-numero"}.xlsx`);
+  return { XLSX, wb };
+}
+
+/** Planilha como bytes, para empacotar no ZIP. */
+export async function gerarPlanilhaBytes(f: Fiscalizacao): Promise<Uint8Array> {
+  const { XLSX, wb } = await montar(f);
+  return XLSX.write(wb, { bookType: "xlsx", type: "array" }) as Uint8Array;
+}
+
+export async function gerarPlanilha(f: Fiscalizacao) {
+  const { XLSX, wb } = await montar(f);
+  XLSX.writeFile(wb, nomePlanilha(f));
 }

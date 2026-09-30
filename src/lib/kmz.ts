@@ -37,7 +37,11 @@ function descricao(
   return `<![CDATA[${html}]]>`;
 }
 
-export async function gerarKmz(f: Fiscalizacao) {
+export function nomeKmz(f: Fiscalizacao) {
+  return `Fiscalizacao_${(f.projeto || "projeto").replace(/[^\w-]+/g, "_")}.kmz`;
+}
+
+export async function gerarKmzBlob(f: Fiscalizacao): Promise<Blob> {
   const zip = new JSZip();
   const marcas: string[] = [];
   f.pontos.forEach((p, i) => {
@@ -62,11 +66,15 @@ export async function gerarKmz(f: Fiscalizacao) {
 ${marcas.join("\n")}
 </Document></kml>`;
   zip.file("doc.kml", kml);
-  const blob = await zip.generateAsync({ type: "blob", mimeType: "application/vnd.google-earth.kmz" });
+  return await zip.generateAsync({ type: "blob", mimeType: "application/vnd.google-earth.kmz" });
+}
+
+export async function gerarKmz(f: Fiscalizacao) {
+  const blob = await gerarKmzBlob(f);
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `Fiscalizacao_${(f.projeto || "projeto").replace(/[^\w-]+/g, "_")}.kmz`;
+  a.download = nomeKmz(f);
   a.click();
   URL.revokeObjectURL(url);
 }

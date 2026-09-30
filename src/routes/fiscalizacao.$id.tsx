@@ -3,14 +3,27 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Check,
+  CheckCircle2,
   FileText,
   Hand,
+  Lock,
   MapPin,
   Route as RouteIcon,
   Undo2,
+  Unlock,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { MapaFiscalizacao, type Modo } from "@/components/MapaFiscalizacao";
 import { PainelLocal } from "@/components/PainelLocal";
@@ -50,6 +63,7 @@ function Fiscalizar() {
   const [rascunho, setRascunho] = useState<{ lat: number; lng: number }[]>([]);
   const [pickerAberto, setPickerAberto] = useState(false);
   const [gerando, setGerando] = useState(false);
+  const [confirmarFim, setConfirmarFim] = useState(false);
 
   useEffect(() => {
     obterFiscalizacao(id).then((r) => setF(r ?? null));
@@ -151,6 +165,20 @@ function Fiscalizar() {
     }
   }
 
+  function finalizar() {
+    atualizar((a) => ({ ...a, finalizadaEm: Date.now() }));
+    setConfirmarFim(false);
+    toast.success("Fiscalização finalizada. Você pode reabrir quando quiser.");
+  }
+
+  function reabrir() {
+    atualizar((a) => {
+      const { finalizadaEm: _ignorado, ...resto } = a;
+      return resto as Fiscalizacao;
+    });
+    toast.success("Fiscalização reaberta para edição");
+  }
+
   const selecionarPonto = useCallback((pid: string) => setSelecionado({ tipo: "poste", id: pid }), []);
   const selecionarTrecho = useCallback((tid: string) => setSelecionado({ tipo: "trecho", id: tid }), []);
 
@@ -180,11 +208,30 @@ function Fiscalizar() {
           </Link>
         </Button>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold leading-tight">Projeto {f.projeto}</p>
+          <p className="flex items-center gap-2 truncate text-sm font-semibold leading-tight">
+            Projeto {f.projeto}
+            {f.finalizadaEm && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-100">
+                <CheckCircle2 className="size-3" />
+                Finalizada
+              </span>
+            )}
+          </p>
           <p className="truncate text-xs text-primary-foreground/70">
             {f.pontos.length} postes · {totalPendencias} pendências
           </p>
         </div>
+        {f.finalizadaEm ? (
+          <Button onClick={reabrir} variant="secondary" size="sm" className="gap-1.5">
+            <Unlock className="size-4" />
+            Reabrir
+          </Button>
+        ) : (
+          <Button onClick={() => setConfirmarFim(true)} variant="secondary" size="sm" className="gap-1.5">
+            <Lock className="size-4" />
+            Finalizar
+          </Button>
+        )}
         <Button
           onClick={() =>
             gerarPlanilha(f)
@@ -334,6 +381,22 @@ function Fiscalizar() {
         onFechar={() => setPickerAberto(false)}
         onSelecionar={adicionarPendencia}
       />
+
+      <AlertDialog open={confirmarFim} onOpenChange={setConfirmarFim}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Finalizar esta fiscalização?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ela será marcada como concluída e o pacote com os 3 arquivos ficará disponível na tela
+              inicial. Você pode reabrir para editar quando quiser.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={finalizar}>Finalizar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
