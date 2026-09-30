@@ -3,14 +3,27 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Check,
+  CheckCircle2,
   FileText,
   Hand,
+  Lock,
   MapPin,
   Route as RouteIcon,
   Undo2,
+  Unlock,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { MapaFiscalizacao, type Modo } from "@/components/MapaFiscalizacao";
 import { PainelLocal } from "@/components/PainelLocal";
