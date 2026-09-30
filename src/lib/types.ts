@@ -65,6 +65,8 @@ export interface Fiscalizacao {
   trechos: Trecho[];
   criadoEm: number;
   atualizadoEm: number;
+  /** Definido quando a fiscalização foi finalizada; ausente = em andamento */
+  finalizadaEm?: number;
 }
 
 export const TIPOS_PROJETO = [
