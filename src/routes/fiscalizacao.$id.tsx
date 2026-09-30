@@ -208,11 +208,30 @@ function Fiscalizar() {
           </Link>
         </Button>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold leading-tight">Projeto {f.projeto}</p>
+          <p className="flex items-center gap-2 truncate text-sm font-semibold leading-tight">
+            Projeto {f.projeto}
+            {f.finalizadaEm && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-100">
+                <CheckCircle2 className="size-3" />
+                Finalizada
+              </span>
+            )}
+          </p>
           <p className="truncate text-xs text-primary-foreground/70">
             {f.pontos.length} postes · {totalPendencias} pendências
           </p>
         </div>
+        {f.finalizadaEm ? (
+          <Button onClick={reabrir} variant="secondary" size="sm" className="gap-1.5">
+            <Unlock className="size-4" />
+            Reabrir
+          </Button>
+        ) : (
+          <Button onClick={() => setConfirmarFim(true)} variant="secondary" size="sm" className="gap-1.5">
+            <Lock className="size-4" />
+            Finalizar
+          </Button>
+        )}
         <Button
           onClick={() =>
             gerarPlanilha(f)
