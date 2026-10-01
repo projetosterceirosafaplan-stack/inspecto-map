@@ -6,6 +6,8 @@ import {
   CheckCircle2,
   FileText,
   Hand,
+  Crosshair,
+  LocateFixed,
   Lock,
   MapPin,
   Route as RouteIcon,
@@ -64,10 +66,59 @@ function Fiscalizar() {
   const [pickerAberto, setPickerAberto] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [confirmarFim, setConfirmarFim] = useState(false);
+  const [gps, setGps] = useState<{ lat: number; lng: number; precisao: number } | null>(null);
+  const [foco, setFoco] = useState<{ lat: number; lng: number; t: number } | null>(null);
 
   useEffect(() => {
     obterFiscalizacao(id).then((r) => setF(r ?? null));
   }, [id]);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    const w = navigator.geolocation.watchPosition(
+      (p) => setGps({ lat: p.coords.latitude, lng: p.coords.longitude, precisao: p.coords.accuracy }),
+      () => undefined,
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 },
+    );
+    return () => navigator.geolocation.clearWatch(w);
+  }, []);
+
+  function obterGps(): Promise<{ lat: number; lng: number; precisao: number }> {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject(new Error("GPS indisponível"));
+      navigator.geolocation.getCurrentPosition(
+        (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, precisao: p.coords.accuracy }),
+        (e) => reject(e),
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 },
+      );
+    });
+  }
+
+  async function localizar() {
+    try {
+      const g = gps ?? (await obterGps());
+      setGps(g);
+      setFoco({ lat: g.lat, lng: g.lng, t: Date.now() });
+    } catch {
+      toast.error("Não foi possível obter sua localização. Verifique se o GPS está ligado e permitido.");
+    }
+  }
+
+  async function posteNoGps() {
+    const t = toast.loading("Obtendo posição do GPS...");
+    try {
+      const g = await obterGps().catch(() => {
+        if (gps) return gps;
+        throw new Error("sem gps");
+      });
+      setGps(g);
+      criarPoste({ lat: g.lat, lng: g.lng });
+      setFoco({ lat: g.lat, lng: g.lng, t: Date.now() });
+      toast.success(`Poste criado no GPS (precisão ~${Math.round(g.precisao)} m)`, { id: t });
+    } catch {
+      toast.error("Não foi possível obter sua localização. Verifique se o GPS está ligado e permitido.", { id: t });
+    }
+  }
 
   const atualizar = useCallback((patch: (atual: Fiscalizacao) => Fiscalizacao) => {
     setF((atual) => {
@@ -78,26 +129,30 @@ function Fiscalizar() {
     });
   }, []);
 
+  const criarPoste = useCallback(
+    (coord: { lat: number; lng: number }) => {
+      const ponto: Ponto = {
+        id: crypto.randomUUID(),
+        codigo: "",
+        lat: coord.lat,
+        lng: coord.lng,
+        fotos: [],
+        pendencias: [],
+        criadoEm: Date.now(),
+      };
+      atualizar((a) => ({ ...a, pontos: [...a.pontos, ponto] }));
+      setSelecionado({ tipo: "poste", id: ponto.id });
+      setModo("navegar");
+    },
+    [atualizar],
+  );
+
   const handleMapaClique = useCallback(
     (coord: { lat: number; lng: number }) => {
-      if (modo === "poste") {
-        const ponto: Ponto = {
-          id: crypto.randomUUID(),
-          codigo: "",
-          lat: coord.lat,
-          lng: coord.lng,
-          fotos: [],
-          pendencias: [],
-          criadoEm: Date.now(),
-        };
-        atualizar((a) => ({ ...a, pontos: [...a.pontos, ponto] }));
-        setSelecionado({ tipo: "poste", id: ponto.id });
-        setModo("navegar");
-      } else if (modo === "trecho") {
-        setRascunho((r) => [...r, coord]);
-      }
+      if (modo === "poste") criarPoste(coord);
+      else if (modo === "trecho") setRascunho((r) => [...r, coord]);
     },
-    [modo, atualizar],
+    [modo, criarPoste],
   );
 
   function concluirTrecho() {
@@ -276,7 +331,30 @@ function Fiscalizar() {
           onMapaClique={handleMapaClique}
           onSelecionarPonto={selecionarPonto}
           onSelecionarTrecho={selecionarTrecho}
+          posicaoAtual={gps}
+          foco={foco}
         />
+
+        <div className="absolute bottom-24 right-3 flex flex-col gap-2">
+          <Button
+            size="icon"
+            variant="secondary"
+            className="size-12 rounded-full border shadow-lg"
+            onClick={localizar}
+            aria-label="Minha localização"
+            title="Minha localização"
+          >
+            <LocateFixed className="size-5" />
+          </Button>
+          <Button
+            className="h-12 gap-1.5 rounded-full shadow-lg"
+            onClick={posteNoGps}
+            aria-label="Inserir poste no GPS"
+          >
+            <Crosshair className="size-5" />
+            Poste no GPS
+          </Button>
+        </div>
 
         <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center px-3">
           <div className="pointer-events-auto flex gap-1 rounded-full border bg-card p-1 shadow-lg">
