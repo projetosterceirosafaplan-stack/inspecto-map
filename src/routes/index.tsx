@@ -153,6 +153,25 @@ function Inicio() {
                       <span className="font-medium text-foreground">{pendencias} pendências</span>
                     </p>
                   </Link>
+                  {f.finalizadaEm ? (
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
+                        <CheckCircle2 className="size-3.5" />
+                        Finalizada
+                      </span>
+                      <Button
+                        size="sm"
+                        className="gap-1.5"
+                        disabled={exportando === f.id}
+                        onClick={() => exportarPacote(f)}
+                      >
+                        <FolderDown className="size-4" />
+                        {exportando === f.id ? "Gerando..." : "Baixar pasta"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Em andamento</span>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
