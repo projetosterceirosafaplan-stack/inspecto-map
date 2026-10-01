@@ -47,6 +47,8 @@ export interface Trecho {
   id: string;
   nome: string;
   path: { lat: number; lng: number }[];
+  /** Postes de início e fim vinculados ao trecho */
+  posteIds?: [string, string];
   observacao?: string;
   fotos: Foto[];
   pendencias: PendenciaApontada[];
