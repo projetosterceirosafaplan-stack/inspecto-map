@@ -396,7 +396,7 @@ function Fiscalizar() {
               className="gap-1.5 rounded-full"
               onClick={() => {
                 setModo("navegar");
-                setRascunho([]);
+                cancelarTrecho();
               }}
             >
               <Hand className="size-4" />
@@ -408,7 +408,7 @@ function Fiscalizar() {
               className="gap-1.5 rounded-full"
               onClick={() => {
                 setModo("poste");
-                setRascunho([]);
+                cancelarTrecho();
               }}
             >
               <MapPin className="size-4" />
@@ -453,7 +453,7 @@ function Fiscalizar() {
                 className="size-8"
                 onClick={() => {
                   setModo("navegar");
-                  setRascunho([]);
+                  cancelarTrecho();
                 }}
                 aria-label="Cancelar"
               >
