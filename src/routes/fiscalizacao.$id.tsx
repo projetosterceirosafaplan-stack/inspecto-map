@@ -150,28 +150,47 @@ function Fiscalizar() {
   const handleMapaClique = useCallback(
     (coord: { lat: number; lng: number }) => {
       if (modo === "poste") criarPoste(coord);
-      else if (modo === "trecho") setRascunho((r) => [...r, coord]);
+      else if (modo === "trecho") toast.info("Toque em um poste para vincular o trecho");
     },
     [modo, criarPoste],
   );
 
-  function concluirTrecho() {
-    if (rascunho.length < 2) {
-      toast.error("Marque pelo menos 2 pontos no trecho");
+  const [trechoPostes, setTrechoPostes] = useState<Ponto[]>([]);
+
+  function cancelarTrecho() {
+    setTrechoPostes([]);
+    setRascunho([]);
+  }
+
+  function escolherPosteDoTrecho(p: Ponto) {
+    const primeiro = trechoPostes[0];
+    if (!primeiro) {
+      setTrechoPostes([p]);
+      setRascunho([{ lat: p.lat, lng: p.lng }]);
       return;
     }
+    if (primeiro.id === p.id) {
+      toast.error("Escolha um poste diferente");
+      return;
+    }
+    const rotulo = (x: Ponto) => x.codigo || "?";
     const trecho: Trecho = {
       id: crypto.randomUUID(),
-      nome: "",
-      path: rascunho,
+      nome: `Trecho ${rotulo(primeiro)}-${rotulo(p)}`,
+      path: [
+        { lat: primeiro.lat, lng: primeiro.lng },
+        { lat: p.lat, lng: p.lng },
+      ],
+      posteIds: [primeiro.id, p.id],
       fotos: [],
       pendencias: [],
       criadoEm: Date.now(),
     };
     atualizar((a) => ({ ...a, trechos: [...a.trechos, trecho] }));
-    setRascunho([]);
+    cancelarTrecho();
     setModo("navegar");
     setSelecionado({ tipo: "trecho", id: trecho.id });
+    toast.success(`${trecho.nome} criado`);
   }
 
   const local = useMemo(() => {
@@ -234,8 +253,21 @@ function Fiscalizar() {
     toast.success("Fiscalização reaberta para edição");
   }
 
-  const selecionarPonto = useCallback((pid: string) => setSelecionado({ tipo: "poste", id: pid }), []);
-  const selecionarTrecho = useCallback((tid: string) => setSelecionado({ tipo: "trecho", id: tid }), []);
+  const selecionarPonto = (pid: string) => {
+    if (modo === "trecho") {
+      const p = f?.pontos.find((x) => x.id === pid);
+      if (p) escolherPosteDoTrecho(p);
+      return;
+    }
+    setSelecionado({ tipo: "poste", id: pid });
+  };
+  const selecionarTrecho = useCallback(
+    (tid: string) => {
+      if (modo === "trecho") return;
+      setSelecionado({ tipo: "trecho", id: tid });
+    },
+    [modo],
+  );
 
   if (!f) {
     return (
@@ -400,24 +432,20 @@ function Fiscalizar() {
               <span className="text-xs text-muted-foreground">
                 {modo === "poste"
                   ? "Toque no mapa para criar o poste"
-                  : `Toque para marcar o trecho (${rascunho.length})`}
+                  : trechoPostes[0]
+                    ? `Poste ${trechoPostes[0].codigo || "?"} escolhido — toque no 2º poste`
+                    : "Toque no 1º poste do trecho"}
               </span>
-              {modo === "trecho" && (
-                <>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-8"
-                    onClick={() => setRascunho((r) => r.slice(0, -1))}
-                    aria-label="Desfazer"
-                  >
-                    <Undo2 className="size-4" />
-                  </Button>
-                  <Button size="sm" className="h-8 gap-1.5" onClick={concluirTrecho}>
-                    <Check className="size-4" />
-                    Concluir
-                  </Button>
-                </>
+              {modo === "trecho" && trechoPostes.length > 0 && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="size-8"
+                  onClick={cancelarTrecho}
+                  aria-label="Desfazer"
+                >
+                  <Undo2 className="size-4" />
+                </Button>
               )}
               <Button
                 size="icon"
