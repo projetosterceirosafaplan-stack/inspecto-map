@@ -48,6 +48,10 @@ interface Props {
   onMapaClique: (coord: { lat: number; lng: number }) => void;
   onSelecionarPonto: (id: string) => void;
   onSelecionarTrecho: (id: string) => void;
+  /** Posição atual do GPS (desenhada como ponto azul) */
+  posicaoAtual?: { lat: number; lng: number } | null;
+  /** Quando muda, o mapa centraliza nesta coordenada */
+  foco?: { lat: number; lng: number; t: number } | null;
 }
 
 export function MapaFiscalizacao({
@@ -59,7 +63,10 @@ export function MapaFiscalizacao({
   onMapaClique,
   onSelecionarPonto,
   onSelecionarTrecho,
+  posicaoAtual,
+  foco,
 }: Props) {
+  const gpsRef = useRef<google.maps.Marker | null>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -205,6 +212,39 @@ export function MapaFiscalizacao({
       });
     }
   }, [rascunhoTrecho, pronto]);
+
+  // Ponto azul do GPS
+  useEffect(() => {
+    if (!pronto || !mapRef.current) return;
+    if (!posicaoAtual) {
+      gpsRef.current?.setMap(null);
+      gpsRef.current = null;
+      return;
+    }
+    if (!gpsRef.current) {
+      gpsRef.current = new google.maps.Marker({
+        map: mapRef.current,
+        clickable: false,
+        zIndex: 200,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: "#2563eb",
+          fillOpacity: 1,
+          strokeColor: "#ffffff",
+          strokeWeight: 3,
+        },
+      });
+    }
+    gpsRef.current.setPosition(posicaoAtual);
+  }, [posicaoAtual, pronto]);
+
+  // Centralizar
+  useEffect(() => {
+    if (!pronto || !mapRef.current || !foco) return;
+    mapRef.current.panTo({ lat: foco.lat, lng: foco.lng });
+    if ((mapRef.current.getZoom() ?? 0) < 18) mapRef.current.setZoom(19);
+  }, [foco, pronto]);
 
   if (erro) {
     return (
