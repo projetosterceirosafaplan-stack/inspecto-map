@@ -35,6 +35,15 @@ import { apontar } from "@/lib/pendencias";
 import { gerarRelatorio } from "@/lib/report";
 import { gerarPlanilha } from "@/lib/planilha";
 import { gerarKmz } from "@/lib/kmz";
+import { gerarPacote } from "@/lib/pacote";
+import { ChevronDown, Download, FileSpreadsheet as Sheet2, FolderDown, Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Fiscalizacao, PendenciaCatalogo, Ponto, Trecho } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -319,38 +328,48 @@ function Fiscalizar() {
             Finalizar
           </Button>
         )}
-        <Button
-          onClick={() =>
-            gerarPlanilha(f)
-              .then(() => toast.success("Planilha Excel gerada"))
-              .catch(() => toast.error("Não foi possível gerar a planilha"))
-          }
-          variant="secondary"
-          size="sm"
-        >
-          Excel
-        </Button>
-        <Button
-          onClick={() =>
-            gerarKmz(f)
-              .then(() => toast.success("KMZ gerado"))
-              .catch(() => toast.error("Não foi possível gerar o KMZ"))
-          }
-          variant="secondary"
-          size="sm"
-        >
-          KMZ
-        </Button>
-        <Button
-          onClick={baixarRelatorio}
-          disabled={gerando}
-          variant="secondary"
-          size="sm"
-          className="gap-1.5"
-        >
-          <FileText className="size-4" />
-          {gerando ? "Gerando..." : "Relatório"}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary" size="sm" className="gap-1.5" disabled={gerando}>
+              <Download className="size-4" />
+              {gerando ? "Gerando..." : "Exportar"}
+              <ChevronDown className="size-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-60">
+            <DropdownMenuItem
+              onClick={() =>
+                gerarPacote(f)
+                  .then(() => toast.success("Pacote com os 3 arquivos baixado"))
+                  .catch(() => toast.error("Não foi possível gerar o pacote"))
+              }
+            >
+              <FolderDown /> Pacote completo (.zip)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={baixarRelatorio}>
+              <FileText /> Relatório fotográfico (Word)
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                gerarPlanilha(f)
+                  .then(() => toast.success("Planilha Excel gerada"))
+                  .catch(() => toast.error("Não foi possível gerar a planilha"))
+              }
+            >
+              <Sheet2 /> Planilha de pendências (Excel)
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                gerarKmz(f)
+                  .then(() => toast.success("KMZ gerado"))
+                  .catch(() => toast.error("Não foi possível gerar o KMZ"))
+              }
+            >
+              <Globe /> Google Earth (KMZ)
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <div className="relative flex-1">
@@ -367,68 +386,9 @@ function Fiscalizar() {
           foco={foco}
         />
 
-        <div className="absolute bottom-24 right-3 flex flex-col gap-2">
-          <Button
-            size="icon"
-            variant="secondary"
-            className="size-12 rounded-full border shadow-lg"
-            onClick={localizar}
-            aria-label="Minha localização"
-            title="Minha localização"
-          >
-            <LocateFixed className="size-5" />
-          </Button>
-          <Button
-            className="h-12 gap-1.5 rounded-full shadow-lg"
-            onClick={posteNoGps}
-            aria-label="Inserir poste no GPS"
-          >
-            <Crosshair className="size-5" />
-            Poste no GPS
-          </Button>
-        </div>
-
-        <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center px-3">
-          <div className="pointer-events-auto flex gap-1 rounded-full border bg-card p-1 shadow-lg">
-            <Button
-              size="sm"
-              variant={modo === "navegar" ? "default" : "ghost"}
-              className="gap-1.5 rounded-full"
-              onClick={() => {
-                setModo("navegar");
-                cancelarTrecho();
-              }}
-            >
-              <Hand className="size-4" />
-              Navegar
-            </Button>
-            <Button
-              size="sm"
-              variant={modo === "poste" ? "default" : "ghost"}
-              className="gap-1.5 rounded-full"
-              onClick={() => {
-                setModo("poste");
-                cancelarTrecho();
-              }}
-            >
-              <MapPin className="size-4" />
-              Poste
-            </Button>
-            <Button
-              size="sm"
-              variant={modo === "trecho" ? "default" : "ghost"}
-              className="gap-1.5 rounded-full"
-              onClick={() => setModo("trecho")}
-            >
-              <RouteIcon className="size-4" />
-              Trecho
-            </Button>
-          </div>
-        </div>
-
-        {modo !== "navegar" && (
-          <div className="absolute inset-x-0 bottom-4 flex justify-center px-3">
-            <div className="flex items-center gap-2 rounded-full border bg-card px-3 py-2 shadow-lg">
+        <div className="pointer-events-none absolute inset-x-0 bottom-4 flex flex-col items-center gap-2 px-3">
+          {modo !== "navegar" && (
+            <div className="pointer-events-auto flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 shadow-lg">
               <span className="text-xs text-muted-foreground">
                 {modo === "poste"
                   ? "Toque no mapa para criar o poste"
@@ -437,13 +397,7 @@ function Fiscalizar() {
                     : "Toque no 1º poste do trecho"}
               </span>
               {modo === "trecho" && trechoPostes.length > 0 && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="size-8"
-                  onClick={cancelarTrecho}
-                  aria-label="Desfazer"
-                >
+                <Button size="icon" variant="ghost" className="size-8" onClick={cancelarTrecho} aria-label="Desfazer">
                   <Undo2 className="size-4" />
                 </Button>
               )}
@@ -460,8 +414,48 @@ function Fiscalizar() {
                 <X className="size-4" />
               </Button>
             </div>
+          )}
+
+          <div className="pointer-events-auto flex items-center gap-1 rounded-2xl border bg-card p-1.5 shadow-xl">
+            {([
+              { m: "navegar", icon: Hand, label: "Navegar" },
+              { m: "poste", icon: MapPin, label: "Poste" },
+              { m: "trecho", icon: RouteIcon, label: "Trecho" },
+            ] as const).map(({ m, icon: Icon, label }) => (
+              <Button
+                key={m}
+                variant={modo === m ? "default" : "ghost"}
+                className="h-12 w-16 flex-col gap-0.5 rounded-xl px-1 text-[11px]"
+                onClick={() => {
+                  setModo(m);
+                  if (m !== "trecho") cancelarTrecho();
+                }}
+              >
+                <Icon className="size-5" />
+                {label}
+              </Button>
+            ))}
+            <div className="mx-1 h-9 w-px bg-border" />
+            <Button
+              variant="ghost"
+              className="h-12 w-16 flex-col gap-0.5 rounded-xl px-1 text-[11px]"
+              onClick={localizar}
+              aria-label="Minha localização"
+            >
+              <LocateFixed className="size-5" />
+              Localizar
+            </Button>
+            <Button
+              variant="secondary"
+              className="h-12 w-16 flex-col gap-0.5 rounded-xl px-1 text-[11px]"
+              onClick={posteNoGps}
+              aria-label="Inserir poste no GPS"
+            >
+              <Crosshair className="size-5" />
+              {gps ? `GPS ±${Math.round(gps.precisao)}m` : "Poste GPS"}
+            </Button>
           </div>
-        )}
+        </div>
       </div>
 
       <Sheet open={!!local} onOpenChange={(v) => !v && setSelecionado(null)}>
