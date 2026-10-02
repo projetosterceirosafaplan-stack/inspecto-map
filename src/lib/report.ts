@@ -17,6 +17,34 @@ import {
   WidthType,
 } from "docx";
 import { dataUrlParaBytes } from "./image";
+import logoAfaplan from "@/assets/logo-afaplan.png?inline";
+import logoEquatorial from "@/assets/logo-equatorial.png?inline";
+import { Header, TabStopType } from "docx";
+
+function cabecalhoLogos() {
+  return new Header({
+    children: [
+      new Paragraph({
+        tabStops: [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }],
+        children: [
+          new ImageRun({
+            type: "png",
+            data: dataUrlParaBytes(logoAfaplan),
+            transformation: { width: 150, height: 32 },
+            altText: { title: "Afaplan", description: "Logo Afaplan", name: "Afaplan" },
+          }),
+          new TextRun("\t"),
+          new ImageRun({
+            type: "png",
+            data: dataUrlParaBytes(logoEquatorial),
+            transformation: { width: 131, height: 38 },
+            altText: { title: "Equatorial", description: "Logo Equatorial", name: "Equatorial" },
+          }),
+        ],
+      }),
+    ],
+  });
+}
 import { rotuloPrioridade } from "./pendencias";
 import type { Fiscalizacao, Foto, PendenciaApontada, Ponto, Trecho } from "./types";
 
@@ -297,6 +325,7 @@ export async function gerarRelatorioBlob(f: Fiscalizacao): Promise<Blob> {
             margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
           },
         },
+        headers: { default: cabecalhoLogos() },
         footers: {
           default: new Footer({
             children: [
