@@ -47,7 +47,7 @@ export function PendenciaPicker({ aberto, onFechar, onSelecionar }: Props) {
           />
         </div>
 
-        <ScrollArea className="max-h-16 shrink-0">
+        <div className="max-h-16 shrink-0 overflow-y-auto">
           <div className="flex flex-wrap gap-1.5 pb-1">
             <Button
               size="sm"
@@ -69,9 +69,9 @@ export function PendenciaPicker({ aberto, onFechar, onSelecionar }: Props) {
               </Button>
             ))}
           </div>
-        </ScrollArea>
+        </div>
 
-        <ScrollArea className="min-h-0 flex-1 rounded-md border">
+        <div className="min-h-0 flex-1 overflow-y-auto rounded-md border">
           <ul className="divide-y">
             {resultados.map((p) => (
               <li key={`${p.codigo}-${p.descricao}`}>
