@@ -1,5 +1,16 @@
 import { useRef, useState } from "react";
 import { Camera, ImagePlus, Plus, Trash2, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -117,9 +128,6 @@ export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPende
             </>
           )}
         </div>
-        <Button variant="ghost" size="icon" onClick={onExcluir} aria-label="Excluir local">
-          <Trash2 className="size-4 text-destructive" />
-        </Button>
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto p-4">
@@ -250,6 +258,38 @@ export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPende
             </ul>
           )}
         </div>
+      </div>
+
+      <div className="border-t p-4">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" className="w-full gap-2 text-destructive">
+              <Trash2 className="size-4" />
+              Excluir {kind === "poste" ? "poste" : "trecho"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Excluir {kind === "poste" ? "este poste" : "este trecho"}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Todas as fotos e pendências registradas nele serão apagadas junto.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  onExcluir();
+                  toast.success(kind === "poste" ? "Poste excluído" : "Trecho excluído");
+                }}
+              >
+                Excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
