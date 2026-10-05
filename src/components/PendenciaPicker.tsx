@@ -10,7 +10,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { buscarPendencias, corPrioridade, rotuloPrioridade, TIPOS } from "@/lib/pendencias";
 import type { PendenciaCatalogo } from "@/lib/types";
 
@@ -104,7 +103,7 @@ export function PendenciaPicker({ aberto, onFechar, onSelecionar }: Props) {
               </li>
             )}
           </ul>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
