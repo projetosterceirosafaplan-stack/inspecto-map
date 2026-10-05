@@ -32,13 +32,13 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Fiscaliza Postes — Pendências construtivas em campo" },
+      { title: "SMC Fiscalização — Pendências construtivas em campo" },
       {
         name: "description",
         content:
           "Fiscalize postes do asbuilt no mapa, lance pendências construtivas com foto de evidência e gere o relatório fotográfico em Word.",
       },
-      { property: "og:title", content: "Fiscaliza Postes — Pendências construtivas em campo" },
+      { property: "og:title", content: "SMC Fiscalização — Pendências construtivas em campo" },
       {
         property: "og:description",
         content:
@@ -103,7 +103,7 @@ function Inicio() {
             <Zap className="size-5" />
           </span>
           <div>
-            <h1 className="text-lg font-bold leading-none">Fiscaliza Postes</h1>
+            <h1 className="text-lg font-bold leading-none">SMC Fiscalização</h1>
             <p className="mt-1 text-xs text-primary-foreground/70">
               Pendências construtivas · relatório fotográfico
             </p>

@@ -79,12 +79,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Fiscaliza Postes" },
+      { title: "SMC Fiscalização" },
       {
         name: "description",
         content: "Fiscalização de postes em campo com relatório de pendências construtivas.",
       },
-      { property: "og:title", content: "Fiscaliza Postes" },
+      { property: "og:title", content: "SMC Fiscalização" },
       {
         property: "og:description",
         content: "Fiscalização de postes em campo com relatório de pendências construtivas.",
