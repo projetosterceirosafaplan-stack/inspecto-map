@@ -128,9 +128,6 @@ export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPende
             </>
           )}
         </div>
-        <Button variant="ghost" size="icon" onClick={onExcluir} aria-label="Excluir local">
-          <Trash2 className="size-4 text-destructive" />
-        </Button>
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto p-4">
