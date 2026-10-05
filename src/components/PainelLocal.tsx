@@ -259,6 +259,38 @@ export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPende
           )}
         </div>
       </div>
+
+      <div className="border-t p-4">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" className="w-full gap-2 text-destructive">
+              <Trash2 className="size-4" />
+              Excluir {kind === "poste" ? "poste" : "trecho"}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Excluir {kind === "poste" ? "este poste" : "este trecho"}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Todas as fotos e pendências registradas nele serão apagadas junto.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  onExcluir();
+                  toast.success(kind === "poste" ? "Poste excluído" : "Trecho excluído");
+                }}
+              >
+                Excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }
