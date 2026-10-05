@@ -50,13 +50,13 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/fiscalizacao/$id")({
   head: () => ({
     meta: [
-      { title: "Fiscalização em campo — Fiscaliza Postes" },
+      { title: "Fiscalização em campo — SMC Fiscalização" },
       {
         name: "description",
         content:
           "Marque postes e trechos no mapa, registre pendências construtivas com foto de evidência e gere o relatório fotográfico.",
       },
-      { property: "og:title", content: "Fiscalização em campo — Fiscaliza Postes" },
+      { property: "og:title", content: "Fiscalização em campo — SMC Fiscalização" },
       {
         property: "og:description",
         content: "Mapa de fiscalização com pendências construtivas e evidências fotográficas.",
