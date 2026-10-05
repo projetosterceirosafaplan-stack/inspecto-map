@@ -10,17 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DevTesteRouteImport } from './routes/dev-teste'
 import { Route as FiscalizacaoIdRouteImport } from './routes/fiscalizacao.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevTesteRoute = DevTesteRouteImport.update({
-  id: '/dev-teste',
-  path: '/dev-teste',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FiscalizacaoIdRoute = FiscalizacaoIdRouteImport.update({
@@ -31,31 +25,27 @@ const FiscalizacaoIdRoute = FiscalizacaoIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dev-teste': typeof DevTesteRoute
   '/fiscalizacao/$id': typeof FiscalizacaoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dev-teste': typeof DevTesteRoute
   '/fiscalizacao/$id': typeof FiscalizacaoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dev-teste': typeof DevTesteRoute
   '/fiscalizacao/$id': typeof FiscalizacaoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dev-teste' | '/fiscalizacao/$id'
+  fullPaths: '/' | '/fiscalizacao/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dev-teste' | '/fiscalizacao/$id'
-  id: '__root__' | '/' | '/dev-teste' | '/fiscalizacao/$id'
+  to: '/' | '/fiscalizacao/$id'
+  id: '__root__' | '/' | '/fiscalizacao/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DevTesteRoute: typeof DevTesteRoute
   FiscalizacaoIdRoute: typeof FiscalizacaoIdRoute
 }
 
@@ -66,13 +56,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev-teste': {
-      id: '/dev-teste'
-      path: '/dev-teste'
-      fullPath: '/dev-teste'
-      preLoaderRoute: typeof DevTesteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fiscalizacao/$id': {
@@ -87,7 +70,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DevTesteRoute: DevTesteRoute,
   FiscalizacaoIdRoute: FiscalizacaoIdRoute,
 }
 export const routeTree = rootRouteImport
