@@ -48,6 +48,8 @@ interface Props {
   onMapaClique: (coord: { lat: number; lng: number }) => void;
   onSelecionarPonto: (id: string) => void;
   onSelecionarTrecho: (id: string) => void;
+  /** Arrastar o poste selecionado para nova posição */
+  onMoverPonto?: (id: string, coord: { lat: number; lng: number }) => void;
   /** Posição atual do GPS (desenhada como ponto azul) */
   posicaoAtual?: { lat: number; lng: number } | null;
   /** Quando muda, o mapa centraliza nesta coordenada */
@@ -63,6 +65,7 @@ export function MapaFiscalizacao({
   onMapaClique,
   onSelecionarPonto,
   onSelecionarTrecho,
+  onMoverPonto,
   posicaoAtual,
   foco,
 }: Props) {
@@ -152,9 +155,15 @@ export function MapaFiscalizacao({
         zIndex: selecionado ? 99 : 10,
       });
       marker.addListener("click", () => onSelecionarPonto(p.id));
+      if (selecionado && onMoverPonto && modo === "navegar") {
+        marker.setDraggable(true);
+        marker.addListener("dragend", (e: google.maps.MapMouseEvent) => {
+          if (e.latLng) onMoverPonto(p.id, { lat: e.latLng.lat(), lng: e.latLng.lng() });
+        });
+      }
       return marker;
     });
-  }, [pontos, selecionadoId, pronto, onSelecionarPonto]);
+  }, [pontos, selecionadoId, pronto, onSelecionarPonto, onMoverPonto, modo]);
 
   // Trechos
   useEffect(() => {

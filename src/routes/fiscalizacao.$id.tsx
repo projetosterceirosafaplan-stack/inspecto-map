@@ -221,6 +221,22 @@ function Fiscalizar() {
     );
   }
 
+  function moverPoste(id: string, coord: { lat: number; lng: number }) {
+    atualizar((a) => ({
+      ...a,
+      pontos: a.pontos.map((p) => (p.id === id ? { ...p, ...coord } : p)),
+      trechos: a.trechos.map((t) => {
+        if (!t.posteIds) return t;
+        const i = t.posteIds.indexOf(id);
+        if (i < 0) return t;
+        const path = [...t.path];
+        path[i === 0 ? 0 : path.length - 1] = coord;
+        return { ...t, path };
+      }),
+    }));
+    toast.success("Poste movido");
+  }
+
   function excluirLocal() {
     if (!selecionado) return;
     atualizar((a) =>
@@ -384,6 +400,7 @@ function Fiscalizar() {
           rascunhoTrecho={rascunho}
           onMapaClique={handleMapaClique}
           onSelecionarPonto={selecionarPonto}
+          onMoverPonto={f.finalizadaEm ? undefined : moverPoste}
           onSelecionarTrecho={selecionarTrecho}
           posicaoAtual={gps}
           foco={foco}
