@@ -45,7 +45,7 @@ export async function gerarKmzBlob(f: Fiscalizacao): Promise<Blob> {
   const zip = new JSZip();
   const marcas: string[] = [];
   f.pontos.forEach((p, i) => {
-    marcas.push(`<Placemark><name>${esc(p.codigo || `Poste ${i + 1}`)}</name>
+    marcas.push(`<Placemark><name>${esc(p.codigo ? `${p.numero ?? ""} - ${p.codigo}` : (p.numero ?? `Poste ${i + 1}`))}</name>
 <styleUrl>#${p.pendencias.length ? "pend" : "ok"}</styleUrl>
 <description>${descricao(zip, `poste${i + 1}`, p.observacao, p.fotos, p.pendencias)}</description>
 <Point><coordinates>${p.lng},${p.lat},0</coordinates></Point></Placemark>`);

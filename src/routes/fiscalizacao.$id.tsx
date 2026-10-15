@@ -149,7 +149,10 @@ function Fiscalizar() {
         pendencias: [],
         criadoEm: Date.now(),
       };
-      atualizar((a) => ({ ...a, pontos: [...a.pontos, ponto] }));
+      atualizar((a) => {
+        const c = (garantirNumeros(a).contadorPontos ?? 0) + 1;
+        return { ...a, contadorPontos: c, pontos: [...a.pontos, { ...ponto, numero: `P${c}` }] };
+      });
       setSelecionado({ tipo: "poste", id: ponto.id });
       setModo("navegar");
     },
@@ -393,7 +396,7 @@ function Fiscalizar() {
                 {modo === "poste"
                   ? "Toque no mapa para criar o poste"
                   : trechoPostes[0]
-                    ? `Poste ${trechoPostes[0].codigo || "?"} escolhido — toque no 2º poste`
+                    ? `Poste ${rotuloPonto(trechoPostes[0])} escolhido — toque no 2º poste`
                     : "Toque no 1º poste do trecho"}
               </span>
               {modo === "trecho" && trechoPostes.length > 0 && (

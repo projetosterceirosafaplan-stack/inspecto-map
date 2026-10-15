@@ -1,5 +1,5 @@
 import { openDB, type IDBPDatabase } from "idb";
-import type { Fiscalizacao } from "./types";
+import { garantirNumeros, type Fiscalizacao } from "./types";
 
 const DB_NAME = "fiscaliza-postes";
 const STORE = "fiscalizacoes";
@@ -22,17 +22,18 @@ function getDb() {
 export async function listarFiscalizacoes(): Promise<Fiscalizacao[]> {
   const db = await getDb();
   const all = (await db.getAll(STORE)) as Fiscalizacao[];
-  return all.sort((a, b) => b.atualizadoEm - a.atualizadoEm);
+  return all.map(garantirNumeros).sort((a, b) => b.atualizadoEm - a.atualizadoEm);
 }
 
 export async function obterFiscalizacao(id: string): Promise<Fiscalizacao | undefined> {
   const db = await getDb();
-  return (await db.get(STORE, id)) as Fiscalizacao | undefined;
+  const f = (await db.get(STORE, id)) as Fiscalizacao | undefined;
+  return f ? garantirNumeros(f) : undefined;
 }
 
 export async function salvarFiscalizacao(f: Fiscalizacao): Promise<Fiscalizacao> {
   const db = await getDb();
-  const registro = { ...f, atualizadoEm: Date.now() };
+  const registro = { ...garantirNumeros(f), atualizadoEm: Date.now() };
   await db.put(STORE, registro);
   return registro;
 }
