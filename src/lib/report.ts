@@ -46,7 +46,7 @@ function cabecalhoLogos() {
   });
 }
 import { rotuloPrioridade } from "./pendencias";
-import type { Fiscalizacao, Foto, PendenciaApontada, Ponto, Trecho } from "./types";
+import { rotuloPonto, type Fiscalizacao, type Foto, type PendenciaApontada, type Ponto, type Trecho } from "./types";
 
 const CONTENT_WIDTH = 9026; // A4 com margens de 1 polegada
 const COLS = [1000, 2400, 1200, 2600, 1826] as const;
@@ -264,7 +264,7 @@ export async function gerarRelatorioBlob(f: Fiscalizacao): Promise<Blob> {
     ...f.pontos
       .filter((p) => p.pendencias.length > 0)
       .map((p) => ({
-        nome: `POSTE ${p.codigo || "sem código"}`,
+        nome: `POSTE ${rotuloPonto(p)}`,
         coords: `${p.lat.toFixed(6)}, ${p.lng.toFixed(6)}`,
         item: p as Ponto,
       })),
@@ -295,7 +295,7 @@ export async function gerarRelatorioBlob(f: Fiscalizacao): Promise<Blob> {
         }),
       );
     }
-    const etiqueta = "codigo" in local.item ? local.item.codigo : local.item.nome;
+    const etiqueta = "codigo" in local.item ? rotuloPonto(local.item) : local.item.nome;
     for (const p of local.item.pendencias) {
       children.push(tabelaPendencia(etiqueta || local.nome, p, undefined));
       children.push(espaco(200));

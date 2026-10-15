@@ -102,12 +102,17 @@ export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPende
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {kind === "poste" ? "Poste" : "Trecho"}
           </p>
+          {kind === "poste" && (
+            <p className="mt-1 font-mono text-lg font-bold" title="Identificador fixo, não editável">
+              {(local as Ponto).numero ?? "—"}
+            </p>
+          )}
           {kind === "poste" ? (
             <>
               <Input
                 value={(local as Ponto).codigo}
                 onChange={(e) => onChange({ codigo: e.target.value })}
-                placeholder="Código do poste (asbuilt)"
+                placeholder="Barramento / código do poste"
                 className="mt-1 h-9 font-mono"
               />
               <p className="mt-1.5 font-mono text-xs text-muted-foreground">

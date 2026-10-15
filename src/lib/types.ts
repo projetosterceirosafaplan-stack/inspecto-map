@@ -33,6 +33,8 @@ export interface PendenciaApontada {
 
 export interface Ponto {
   id: string;
+  /** Identificador fixo e único na fiscalização (P1, P2...), não editável */
+  numero?: string;
   /** Código / número do poste no asbuilt */
   codigo: string;
   lat: number;
@@ -65,10 +67,35 @@ export interface Fiscalizacao {
   porteProjeto: string;
   pontos: Ponto[];
   trechos: Trecho[];
+  /** Último número de ponto emitido — nunca reutilizado */
+  contadorPontos?: number;
   criadoEm: number;
   atualizadoEm: number;
   /** Definido quando a fiscalização foi finalizada; ausente = em andamento */
   finalizadaEm?: number;
+}
+
+/** Rótulo "P1 - Barramento" usado no relatório */
+export function rotuloPonto(p: Ponto) {
+  return p.codigo ? `${p.numero ?? "P?"} - ${p.codigo}` : (p.numero ?? "P?");
+}
+
+/** Garante que todo ponto tenha número único (migra dados antigos). */
+export function garantirNumeros(f: Fiscalizacao): Fiscalizacao {
+  let c = f.contadorPontos ?? 0;
+  for (const p of f.pontos) {
+    const n = Number(p.numero?.slice(1));
+    if (Number.isFinite(n) && n > c) c = n;
+  }
+  const vistos = new Set<string>();
+  const pontos = f.pontos.map((p) => {
+    if (p.numero && !vistos.has(p.numero)) { vistos.add(p.numero); return p; }
+    c += 1;
+    const numero = `P${c}`;
+    vistos.add(numero);
+    return { ...p, numero };
+  });
+  return { ...f, pontos, contadorPontos: c };
 }
 
 export const TIPOS_PROJETO = [

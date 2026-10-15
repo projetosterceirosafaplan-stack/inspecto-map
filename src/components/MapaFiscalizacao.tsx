@@ -139,7 +139,7 @@ export function MapaFiscalizacao({
       const marker = new google.maps.Marker({
         map: mapRef.current!,
         position: { lat: p.lat, lng: p.lng },
-        title: `Poste ${p.codigo || "?"} — ${pendencias} pendência(s)`,
+        title: `${p.numero ?? ""} ${p.codigo || ""} — ${pendencias} pendência(s)`,
         label: pendencias ? { text: String(pendencias), color: "#ffffff", fontSize: "11px" } : null,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
