@@ -49,7 +49,7 @@ interface Props {
   onSelecionarPonto: (id: string) => void;
   onSelecionarTrecho: (id: string) => void;
   /** Arrastar o poste selecionado para nova posição */
-  onMoverPonto?: (id: string, coord: { lat: number; lng: number }) => void;
+  onMoverPonto?: ((id: string, coord: { lat: number; lng: number }) => void) | undefined;
   /** Posição atual do GPS (desenhada como ponto azul) */
   posicaoAtual?: { lat: number; lng: number } | null;
   /** Quando muda, o mapa centraliza nesta coordenada */
