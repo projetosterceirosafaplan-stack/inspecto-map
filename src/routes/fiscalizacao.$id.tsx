@@ -44,7 +44,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Fiscalizacao, PendenciaCatalogo, Ponto, Trecho } from "@/lib/types";
+import { garantirNumeros, rotuloPonto, type Fiscalizacao, type PendenciaCatalogo, type Ponto, type Trecho } from "@/lib/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/fiscalizacao/$id")({

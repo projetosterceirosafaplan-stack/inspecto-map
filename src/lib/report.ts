@@ -46,7 +46,7 @@ function cabecalhoLogos() {
   });
 }
 import { rotuloPrioridade } from "./pendencias";
-import type { Fiscalizacao, Foto, PendenciaApontada, Ponto, Trecho } from "./types";
+import { rotuloPonto, type Fiscalizacao, type Foto, type PendenciaApontada, type Ponto, type Trecho } from "./types";
 
 const CONTENT_WIDTH = 9026; // A4 com margens de 1 polegada
 const COLS = [1000, 2400, 1200, 2600, 1826] as const;
