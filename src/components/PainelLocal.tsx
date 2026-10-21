@@ -28,7 +28,7 @@ interface Props {
   kind: "poste" | "trecho";
   onChange: (patch: Partial<Ponto & Trecho>) => void;
   onExcluir: () => void;
-  onMover?: () => void;
+  onMover?: (() => void) | undefined;
   onAdicionarPendencia: () => void;
 }
 
