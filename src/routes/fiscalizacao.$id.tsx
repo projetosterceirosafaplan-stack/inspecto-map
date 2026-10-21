@@ -77,6 +77,7 @@ function Fiscalizar() {
   const [confirmarFim, setConfirmarFim] = useState(false);
   const [gps, setGps] = useState<{ lat: number; lng: number; precisao: number } | null>(null);
   const [foco, setFoco] = useState<{ lat: number; lng: number; t: number } | null>(null);
+  const [moverId, setMoverId] = useState<string | null>(null);
 
   useEffect(() => {
     obterFiscalizacao(id).then((r) => setF(r ?? null));
@@ -161,10 +162,16 @@ function Fiscalizar() {
 
   const handleMapaClique = useCallback(
     (coord: { lat: number; lng: number }) => {
+      if (modo === "mover" && moverId) {
+        moverPoste(moverId, coord);
+        setMoverId(null);
+        setModo("navegar");
+        return;
+      }
       if (modo === "poste") criarPoste(coord);
       else if (modo === "trecho") toast.info("Toque em um poste para vincular o trecho");
     },
-    [modo, criarPoste],
+    [modo, moverId, criarPoste],
   );
 
   const [trechoPostes, setTrechoPostes] = useState<Ponto[]>([]);
@@ -237,6 +244,13 @@ function Fiscalizar() {
     toast.success("Poste movido");
   }
 
+  function iniciarMover() {
+    if (!selecionado || selecionado.tipo !== "poste") return;
+    setMoverId(selecionado.id);
+    setSelecionado(null);
+    setModo("mover");
+  }
+
   function excluirLocal() {
     if (!selecionado) return;
     atualizar((a) =>
@@ -282,6 +296,7 @@ function Fiscalizar() {
   }
 
   const selecionarPonto = (pid: string) => {
+    if (modo === "mover") return;
     if (modo === "trecho") {
       const p = f?.pontos.find((x) => x.id === pid);
       if (p) escolherPosteDoTrecho(p);
@@ -291,7 +306,7 @@ function Fiscalizar() {
   };
   const selecionarTrecho = useCallback(
     (tid: string) => {
-      if (modo === "trecho") return;
+      if (modo === "trecho" || modo === "mover") return;
       setSelecionado({ tipo: "trecho", id: tid });
     },
     [modo],
@@ -400,7 +415,6 @@ function Fiscalizar() {
           rascunhoTrecho={rascunho}
           onMapaClique={handleMapaClique}
           onSelecionarPonto={selecionarPonto}
-          onMoverPonto={f.finalizadaEm ? undefined : moverPoste}
           onSelecionarTrecho={selecionarTrecho}
           posicaoAtual={gps}
           foco={foco}
@@ -412,9 +426,11 @@ function Fiscalizar() {
               <span className="text-xs text-muted-foreground">
                 {modo === "poste"
                   ? "Toque no mapa para criar o poste"
-                  : trechoPostes[0]
-                    ? `Poste ${rotuloPonto(trechoPostes[0])} escolhido — toque no 2º poste`
-                    : "Toque no 1º poste do trecho"}
+                  : modo === "mover"
+                    ? "Toque no mapa para posicionar o poste"
+                    : trechoPostes[0]
+                      ? `Poste ${rotuloPonto(trechoPostes[0])} escolhido — toque no 2º poste`
+                      : "Toque no 1º poste do trecho"}
               </span>
               {modo === "trecho" && trechoPostes.length > 0 && (
                 <Button size="icon" variant="ghost" className="size-8" onClick={cancelarTrecho} aria-label="Desfazer">
@@ -427,6 +443,7 @@ function Fiscalizar() {
                 className="size-8"
                 onClick={() => {
                   setModo("navegar");
+                  setMoverId(null);
                   cancelarTrecho();
                 }}
                 aria-label="Cancelar"
@@ -490,6 +507,9 @@ function Fiscalizar() {
               kind={selecionado.tipo}
               onChange={alterarLocal}
               onExcluir={excluirLocal}
+              onMover={
+                selecionado.tipo === "poste" && !f.finalizadaEm ? iniciarMover : undefined
+              }
               onAdicionarPendencia={() => setPickerAberto(true)}
             />
           )}

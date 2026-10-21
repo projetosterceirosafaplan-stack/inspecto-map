@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Camera, ImagePlus, Plus, Trash2, X } from "lucide-react";
+import { Camera, ImagePlus, Move, Plus, Trash2, X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +28,7 @@ interface Props {
   kind: "poste" | "trecho";
   onChange: (patch: Partial<Ponto & Trecho>) => void;
   onExcluir: () => void;
+  onMover?: (() => void) | undefined;
   onAdicionarPendencia: () => void;
 }
 
@@ -80,7 +81,7 @@ function BotaoFoto({
   );
 }
 
-export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPendencia }: Props) {
+export function PainelLocal({ local, kind, onChange, onExcluir, onMover, onAdicionarPendencia }: Props) {
   const pendencias = local.pendencias;
 
   type PatchPendencia = { [K in keyof PendenciaApontada]?: PendenciaApontada[K] | undefined };
@@ -266,6 +267,12 @@ export function PainelLocal({ local, kind, onChange, onExcluir, onAdicionarPende
       </div>
 
       <div className="border-t p-4">
+        {kind === "poste" && onMover && (
+          <Button variant="outline" className="mb-2 w-full gap-2" onClick={onMover}>
+            <Move className="size-4" />
+            Mover poste
+          </Button>
+        )}
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="outline" className="w-full gap-2 text-destructive">
